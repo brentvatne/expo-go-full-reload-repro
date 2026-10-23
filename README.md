@@ -1,56 +1,21 @@
-# Welcome to your Expo app 👋
+# Expo Go 58: a Fast Refresh full reload fails with "Cannot find native module 'ExpoAsset'"
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A fresh `create-expo-app` project (SDK 58), unchanged except for `repro/run.sh`.
 
-## Get started
+## Steps
 
-1. Install dependencies
+1. `npm install`, then `npx expo start` and open the app in Expo Go on iOS.
+2. Run `./repro/run.sh`. It makes one save that Fast Refresh can't apply in place: it adds `export const answer = 42;` to `src/app/index.tsx`. Fast Refresh falls back to a full reload.
 
-   ```bash
-   npm install
-   ```
+The reload doesn't come up. The app shows a red screen, and the dev server logs:
 
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **src/app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+iOS  ERROR  Unhandled JS Exception: [runtime not ready]: Error: Cannot find native module 'ExpoAsset'
+ WARN  No native ExponentConstants module found, are you sure the expo-constants's module is linked properly?
+ ERROR  [runtime not ready]: Error: Cannot find native module 'ExpoAsset'
+ ERROR  [runtime not ready]: Invariant Violation: "main" has not been registered.
 ```
 
-This command will move the starter code to the **example** directory and create a blank **src/app** directory where you can start developing.
+After that the app no longer receives updates. Pressing Reload on the red screen, or relaunching Expo Go, loads the same project correctly.
 
-### Other setup steps
-
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+`./repro/run.sh layout` does the same with `export const unstable_settings = { anchor: 'index' };` in `src/app/_layout.tsx`.
